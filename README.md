@@ -52,15 +52,16 @@ src/
 git clone https://github.com/your-username/face-detection-optimization-dashboard.git
 cd face-detection-optimization-dashboard
 
+```
+
 2️⃣ Install dependencies:
-
-
+```bash
 npm install
+```
 3️⃣ Run the application:
-
-
+```bash
 npm run dev
-
+```
 ## Access the app at: http://localhost:3000
 
 ## 📂 Configuration Features
