@@ -295,97 +295,99 @@ export const OptimizationDashboard: React.FC = () => {
   };
 
   const stages = [
-    {
-      number: 1,
-      title: "Setup Model & Analisis",
-      description: "Inisialisasi model RetinaFace-Ghost dan analisis performa saat ini",
-      status: session?.steps[0]?.status === 'completed' ? 'completed' as const : 
-              session?.steps[0]?.status === 'running' ? 'active' as const : 'pending' as const,
-      icon: <Brain className="text-blue-600" size={20} />,
-      details: [
-        "Clone repository RetinaFace-Ghost dari GitHub",
-        "Load pre-trained weights MobileNetV3",
-        "Analisis arsitektur model dan jumlah parameter",
-        "Evaluasi performa baseline pada test dataset",
-        "Identifikasi bottleneck dan area yang perlu diperbaiki"
-      ]
-    },
-    {
-      number: 2,
-      title: "Persiapan Dataset",
-      description: "Persiapkan dan analisis dataset deteksi wajah Anda",
-      status: session?.steps[1]?.status === 'completed' ? 'completed' as const : 
-              session?.steps[1]?.status === 'running' ? 'active' as const : 'pending' as const,
-      icon: <Database className="text-green-600" size={20} />,
-      details: [
-        "Load dan inspeksi struktur dataset",
-        "Analisis distribusi kelas (wajah vs non-wajah)",
-        "Identifikasi kelas yang tidak seimbang dan edge cases",
-        "Bagi dataset ke training, validation, dan test sets",
-        "Buat data pipeline dengan augmentasi yang tepat"
-      ]
-    },
-    {
-      number: 3,
-      title: "Implementasi Data Balancing",
-      description: "Terapkan teknik oversampling dan undersampling",
-      status: session?.steps[2]?.status === 'completed' ? 'completed' as const : 
-              session?.steps[2]?.status === 'running' ? 'active' as const : 'pending' as const,
-      icon: <Settings className="text-purple-600" size={20} />,
-      details: [
-        "Implementasi SMOTE untuk oversampling minority class",
-        "Terapkan Random/Tomek Links undersampling untuk majority class",
-        "Konfigurasi rasio sampling berdasarkan distribusi kelas",
-        "Validasi kualitas dataset yang sudah seimbang",
-        "Buat balanced data loaders untuk training"
-      ]
-    },
-    {
-      number: 4,
-      title: "Fine-tuning Model",
-      description: "Optimasi MobileNetV3 dengan dataset yang seimbang",
-      status: session?.steps[3]?.status === 'completed' ? 'completed' as const : 
-              session?.steps[3]?.status === 'running' ? 'active' as const : 'pending' as const,
-      icon: <PlayCircle className="text-orange-600" size={20} />,
-      details: [
-        "Setup transfer learning dari pre-trained weights",
-        "Konfigurasi learning rate schedule dan optimizer",
-        "Implementasi strategi data augmentation",
-        "Training model dengan dataset yang seimbang",
-        "Monitor training metrics dan early stopping"
-      ]
-    },
-    {
-      number: 5,
-      title: "Evaluasi Performa",
-      description: "Evaluasi performa model yang sudah dioptimasi",
-      status: session?.steps[4]?.status === 'completed' ? 'completed' as const : 
-              session?.steps[4]?.status === 'running' ? 'active' as const : 'pending' as const,
-      icon: <BarChart3 className="text-red-600" size={20} />,
-      details: [
-        "Hitung metrik precision, recall, F1-score",
-        "Hitung mAP (mean Average Precision)",
-        "Analisis confusion matrix dan error cases",
-        "Bandingkan performa dengan baseline model",
-        "Validasi pada berbagai skenario deteksi wajah"
-      ]
-    },
-    {
-      number: 6,
-      title: "Deployment Model",
-      description: "Deploy model yang sudah dioptimasi untuk penggunaan produksi",
-      status: session?.steps[5]?.status === 'completed' ? 'completed' as const : 
-              session?.steps[5]?.status === 'running' ? 'active' as const : 'pending' as const,
-      icon: <Upload className="text-indigo-600" size={20} />,
-      details: [
-        "Konversi model ke format deployment (ONNX/TensorRT)",
-        "Optimasi kecepatan inference dan penggunaan memori",
-        "Setup infrastruktur model serving",
-        "Implementasi batch processing capabilities",
-        "Buat API endpoints untuk layanan deteksi wajah"
-      ]
-    }
-  ];
+    const stages = [
+  {
+    number: 1,
+    title: "Model Setup & Analysis",
+    description: "Initialize the RetinaFace-Ghost model and analyze current performance",
+    status: session?.steps[0]?.status === 'completed' ? 'completed' as const : 
+            session?.steps[0]?.status === 'running' ? 'active' as const : 'pending' as const,
+    icon: <Brain className="text-blue-600" size={20} />,
+    details: [
+      "Clone RetinaFace-Ghost repository from GitHub",
+      "Load pre-trained MobileNetV3 weights",
+      "Analyze model architecture and parameter count",
+      "Evaluate baseline performance on the test dataset",
+      "Identify bottlenecks and areas for improvement"
+    ]
+  },
+  {
+    number: 2,
+    title: "Dataset Preparation",
+    description: "Prepare and analyze your face detection dataset",
+    status: session?.steps[1]?.status === 'completed' ? 'completed' as const : 
+            session?.steps[1]?.status === 'running' ? 'active' as const : 'pending' as const,
+    icon: <Database className="text-green-600" size={20} />,
+    details: [
+      "Load and inspect dataset structure",
+      "Analyze class distribution (face vs non-face)",
+      "Identify imbalanced classes and edge cases",
+      "Split dataset into training, validation, and test sets",
+      "Create data pipeline with proper augmentation"
+    ]
+  },
+  {
+    number: 3,
+    title: "Data Balancing Implementation",
+    description: "Apply oversampling and undersampling techniques",
+    status: session?.steps[2]?.status === 'completed' ? 'completed' as const : 
+            session?.steps[2]?.status === 'running' ? 'active' as const : 'pending' as const,
+    icon: <Settings className="text-purple-600" size={20} />,
+    details: [
+      "Implement SMOTE for oversampling minority class",
+      "Apply Random/Tomek Links undersampling for majority class",
+      "Configure sampling ratio based on class distribution",
+      "Validate quality of the balanced dataset",
+      "Create balanced data loaders for training"
+    ]
+  },
+  {
+    number: 4,
+    title: "Model Fine-tuning",
+    description: "Optimize MobileNetV3 using the balanced dataset",
+    status: session?.steps[3]?.status === 'completed' ? 'completed' as const : 
+            session?.steps[3]?.status === 'running' ? 'active' as const : 'pending' as const,
+    icon: <PlayCircle className="text-orange-600" size={20} />,
+    details: [
+      "Set up transfer learning from pre-trained weights",
+      "Configure learning rate schedule and optimizer",
+      "Implement data augmentation strategies",
+      "Train model with the balanced dataset",
+      "Monitor training metrics and apply early stopping"
+    ]
+  },
+  {
+    number: 5,
+    title: "Performance Evaluation",
+    description: "Evaluate the performance of the optimized model",
+    status: session?.steps[4]?.status === 'completed' ? 'completed' as const : 
+            session?.steps[4]?.status === 'running' ? 'active' as const : 'pending' as const,
+    icon: <BarChart3 className="text-red-600" size={20} />,
+    details: [
+      "Calculate precision, recall, and F1-score",
+      "Compute mAP (mean Average Precision)",
+      "Analyze confusion matrix and error cases",
+      "Compare performance with baseline model",
+      "Validate across various face detection scenarios"
+    ]
+  },
+  {
+    number: 6,
+    title: "Model Deployment",
+    description: "Deploy the optimized model for production use",
+    status: session?.steps[5]?.status === 'completed' ? 'completed' as const : 
+            session?.steps[5]?.status === 'running' ? 'active' as const : 'pending' as const,
+    icon: <Upload className="text-indigo-600" size={20} />,
+    details: [
+      "Convert model to deployment format (ONNX/TensorRT)",
+      "Optimize inference speed and memory usage",
+      "Set up model serving infrastructure",
+      "Implement batch processing capabilities",
+      "Create API endpoints for face detection service"
+    ]
+  }
+];
+
 
   const completedSteps = session?.steps.filter(s => s.status === 'completed').length || 0;
   const totalSteps = stages.length;
