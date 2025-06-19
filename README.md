@@ -33,22 +33,22 @@ This project leverages the model and dataset from [ppogg/Retinaface_Ghost](https
 ## 🏗️ Project Structure
 
 src/
-├── components/
-│ ├── OptimizationDashboard.tsx
-│ └── OptimizationProgress.tsx
-├── hooks/
-│ └── useOptimization.ts
-├── services/
-│ └── optimizationService.ts
-└── types/
-└── optimization.ts
+- ├── components/
+- │ ├── OptimizationDashboard.tsx
+- │ └── OptimizationProgress.tsx
+- ├── hooks/
+- │ └── useOptimization.ts
+- ├── services/
+- │ └── optimizationService.ts
+- └── types/
+- └── optimization.ts
 
 
 ## ⚡ Installation
 
 1️⃣ Clone the repository:
 
-
+```bash
 git clone https://github.com/your-username/face-detection-optimization-dashboard.git
 cd face-detection-optimization-dashboard
 
