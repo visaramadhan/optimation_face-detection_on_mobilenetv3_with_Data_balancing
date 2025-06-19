@@ -99,87 +99,87 @@ const DataBalancingConfig: React.FC<{
     });
   };
 
-  return (
-    <div className="bg-white rounded-xl p-6 shadow-lg border border-gray-200">
-      <h3 className="text-2xl font-bold text-gray-800 mb-6 flex items-center gap-2">
-        <Settings className="text-blue-600" />
-        Konfigurasi Data Balancing
-      </h3>
-      
-      <div className="grid md:grid-cols-2 gap-6">
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            Teknik Oversampling
-          </label>
-          <select 
-            value={config.dataBalancing.oversamplingTechnique}
-            onChange={(e) => updateDataBalancing({ oversamplingTechnique: e.target.value })}
-            className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-          >
-            <option value="SMOTE">SMOTE (Synthetic Minority Oversampling)</option>
-            <option value="ADASYN">ADASYN (Adaptive Synthetic)</option>
-            <option value="BorderlineSMOTE">Borderline-SMOTE</option>
-            <option value="RandomOverSampler">Random Oversampling</option>
-          </select>
-        </div>
-        
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            Teknik Undersampling
-          </label>
-          <select 
-            value={config.dataBalancing.undersamplingTechnique}
-            onChange={(e) => updateDataBalancing({ undersamplingTechnique: e.target.value })}
-            className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-          >
-            <option value="RandomUnderSampler">Random Undersampling</option>
-            <option value="TomekLinks">Tomek Links</option>
-            <option value="EditedNearestNeighbours">Edited Nearest Neighbours</option>
-            <option value="NearMiss">Near Miss</option>
-          </select>
-        </div>
-        
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            Rasio Oversampling: {config.dataBalancing.oversamplingRatio}x
-          </label>
-          <input 
-            type="range"
-            min="1"
-            max="3"
-            step="0.1"
-            value={config.dataBalancing.oversamplingRatio}
-            onChange={(e) => updateDataBalancing({ oversamplingRatio: parseFloat(e.target.value) })}
-            className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer slider"
-          />
-        </div>
-        
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            Rasio Undersampling: {config.dataBalancing.undersamplingRatio}x
-          </label>
-          <input 
-            type="range"
-            min="0.5"
-            max="1"
-            step="0.05"
-            value={config.dataBalancing.undersamplingRatio}
-            onChange={(e) => updateDataBalancing({ undersamplingRatio: parseFloat(e.target.value) })}
-            className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer slider"
-          />
-        </div>
+return (
+  <div className="bg-white rounded-xl p-6 shadow-lg border border-gray-200">
+    <h3 className="text-2xl font-bold text-gray-800 mb-6 flex items-center gap-2">
+      <Settings className="text-blue-600" />
+      Data Balancing Configuration
+    </h3>
+    
+    <div className="grid md:grid-cols-2 gap-6">
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-2">
+          Oversampling Technique
+        </label>
+        <select 
+          value={config.dataBalancing.oversamplingTechnique}
+          onChange={(e) => updateDataBalancing({ oversamplingTechnique: e.target.value })}
+          className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+        >
+          <option value="SMOTE">SMOTE (Synthetic Minority Oversampling)</option>
+          <option value="ADASYN">ADASYN (Adaptive Synthetic)</option>
+          <option value="BorderlineSMOTE">Borderline-SMOTE</option>
+          <option value="RandomOverSampler">Random Oversampling</option>
+        </select>
       </div>
       
-      <div className="mt-6 p-4 bg-blue-50 rounded-lg">
-        <h4 className="font-semibold text-blue-800 mb-2">Konfigurasi Saat Ini:</h4>
-        <div className="text-blue-700 space-y-1 text-sm">
-          <p>• Oversampling: {config.dataBalancing.oversamplingTechnique} dengan rasio {config.dataBalancing.oversamplingRatio}x</p>
-          <p>• Undersampling: {config.dataBalancing.undersamplingTechnique} dengan rasio {config.dataBalancing.undersamplingRatio}x</p>
-          <p>• Perkiraan peningkatan keseimbangan: ~{((config.dataBalancing.oversamplingRatio + config.dataBalancing.undersamplingRatio) / 2 * 100 - 100).toFixed(1)}%</p>
-        </div>
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-2">
+          Undersampling Technique
+        </label>
+        <select 
+          value={config.dataBalancing.undersamplingTechnique}
+          onChange={(e) => updateDataBalancing({ undersamplingTechnique: e.target.value })}
+          className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+        >
+          <option value="RandomUnderSampler">Random Undersampling</option>
+          <option value="TomekLinks">Tomek Links</option>
+          <option value="EditedNearestNeighbours">Edited Nearest Neighbours</option>
+          <option value="NearMiss">Near Miss</option>
+        </select>
+      </div>
+      
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-2">
+          Oversampling Ratio: {config.dataBalancing.oversamplingRatio}x
+        </label>
+        <input 
+          type="range"
+          min="1"
+          max="3"
+          step="0.1"
+          value={config.dataBalancing.oversamplingRatio}
+          onChange={(e) => updateDataBalancing({ oversamplingRatio: parseFloat(e.target.value) })}
+          className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer slider"
+        />
+      </div>
+      
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-2">
+          Undersampling Ratio: {config.dataBalancing.undersamplingRatio}x
+        </label>
+        <input 
+          type="range"
+          min="0.5"
+          max="1"
+          step="0.05"
+          value={config.dataBalancing.undersamplingRatio}
+          onChange={(e) => updateDataBalancing({ undersamplingRatio: parseFloat(e.target.value) })}
+          className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer slider"
+        />
       </div>
     </div>
-  );
+    
+    <div className="mt-6 p-4 bg-blue-50 rounded-lg">
+      <h4 className="font-semibold text-blue-800 mb-2">Current Configuration:</h4>
+      <div className="text-blue-700 space-y-1 text-sm">
+        <p>• Oversampling: {config.dataBalancing.oversamplingTechnique} with ratio {config.dataBalancing.oversamplingRatio}x</p>
+        <p>• Undersampling: {config.dataBalancing.undersamplingTechnique} with ratio {config.dataBalancing.undersamplingRatio}x</p>
+        <p>• Estimated balance improvement: ~{((config.dataBalancing.oversamplingRatio + config.dataBalancing.undersamplingRatio) / 2 * 100 - 100).toFixed(1)}%</p>
+      </div>
+    </div>
+  </div>
+);
 };
 
 const MetricsDashboard: React.FC<{ session?: any }> = ({ session }) => {
@@ -400,8 +400,7 @@ export const OptimizationDashboard: React.FC = () => {
             Optimasi Deteksi Wajah MobileNetV3
           </h1>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-            Workflow komprehensif untuk mengoptimalkan akurasi deteksi wajah menggunakan 
-            model RetinaFace-Ghost dengan teknik data balancing
+            Workflow Comprehensif for optimation accuracy face detection use RetinaFace-Ghost Model MobileNetV3 with Balancing Data Technique
           </p>
           <p className="text-xl font-bold text-gray-800 max-w-3xl mx-auto">
             by: M. Visa Ramadhan
@@ -474,7 +473,7 @@ export const OptimizationDashboard: React.FC = () => {
         {/* Optimization Stages */}
         <div className="mb-12">
           <h2 className="text-3xl font-bold text-gray-800 mb-8 text-center">
-            Alur Kerja Optimasi
+            Worflow Optimation
           </h2>
           <div className="space-y-6">
             {stages.map((stage) => (
@@ -500,7 +499,7 @@ export const OptimizationDashboard: React.FC = () => {
               className="flex items-center gap-2 px-8 py-4 bg-white text-gray-700 border-2 border-gray-300 rounded-lg hover:border-gray-400 transition-colors font-semibold"
             >
               <Download size={20} />
-              Ekspor Konfigurasi
+              Eksport Configuration
             </button>
             
             <button 
@@ -508,7 +507,7 @@ export const OptimizationDashboard: React.FC = () => {
               className="flex items-center gap-2 px-8 py-4 bg-white text-gray-700 border-2 border-gray-300 rounded-lg hover:border-gray-400 transition-colors font-semibold"
             >
               <FileUp size={20} />
-              Impor Konfigurasi
+              Import Configuration
             </button>
             
             <input
