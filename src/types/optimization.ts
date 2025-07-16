@@ -10,6 +10,9 @@ export interface OptimizationConfig {
     batchSize: number;
     epochs: number;
     optimizer: string;
+    architecture: string;
+    inputSize: number;
+    augmentation: boolean;
   };
   dataset: {
     trainSplit: number;
@@ -27,6 +30,8 @@ export interface OptimizationStep {
   startTime?: Date;
   endTime?: Date;
   error?: string;
+  formula?: string;
+  details?: string[];
 }
 
 export interface OptimizationSession {
@@ -36,10 +41,56 @@ export interface OptimizationSession {
   status: 'idle' | 'running' | 'completed' | 'error';
   startTime?: Date;
   endTime?: Date;
-  results?: {
-    precision: number;
-    recall: number;
-    f1Score: number;
-    mAP: number;
+  results?: ModelResults;
+}
+
+export interface ModelResults {
+  precision: number;
+  recall: number;
+  f1Score: number;
+  mAP: number;
+  accuracy: number;
+  loss: number;
+  trainingTime: number;
+  modelSize: number;
+  inferenceTime: number;
+}
+
+export interface ModelComparison {
+  id: string;
+  name: string;
+  config: OptimizationConfig;
+  results: ModelResults;
+  timestamp: Date;
+}
+
+export interface DatasetSample {
+  id: string;
+  imageUrl: string;
+  label: string;
+  annotations: BoundingBox[];
+  metadata: {
+    width: number;
+    height: number;
+    faces: number;
   };
+}
+
+export interface BoundingBox {
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+  confidence: number;
+  label: string;
+}
+
+export interface TestResult {
+  id: string;
+  imageUrl: string;
+  originalImage: string;
+  detections: BoundingBox[];
+  processingTime: number;
+  confidence: number;
+  timestamp: Date;
 }

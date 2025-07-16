@@ -14,11 +14,18 @@ import {
   Eye,
   Zap,
   FileUp,
-  Loader
+  Loader,
+  BookOpen,
+  TestTube,
+  GitCompare
 } from 'lucide-react';
 import { useOptimization } from '../hooks/useOptimization';
 import { OptimizationProgress } from './OptimizationProgress';
-import { OptimizationConfig } from '../types/optimization';
+import { OptimizationConfig, ModelComparison } from '../types/optimization';
+import { ModelingProcess } from './ModelingProcess';
+import { DatasetPreview } from './DatasetPreview';
+import { ModelComparison as ModelComparisonComponent } from './ModelComparison';
+import { ModelTesting } from './ModelTesting';
 
 interface StageProps {
   number: number;
@@ -249,6 +256,8 @@ const MetricsDashboard: React.FC<{ session?: any }> = ({ session }) => {
 export const OptimizationDashboard: React.FC = () => {
   const { session, isLoading, error, startOptimization, stopOptimization, exportConfig, importConfig } = useOptimization();
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [activeTab, setActiveTab] = useState('overview');
+  const [modelComparisons, setModelComparisons] = useState<ModelComparison[]>([]);
   
   const [config, setConfig] = useState<OptimizationConfig>({
     dataBalancing: {
@@ -261,7 +270,10 @@ export const OptimizationDashboard: React.FC = () => {
       learningRate: 0.001,
       batchSize: 32,
       epochs: 50,
-      optimizer: 'Adam'
+      optimizer: 'Adam',
+      architecture: 'MobileNetV3',
+      inputSize: 416,
+      augmentation: true
     },
     dataset: {
       trainSplit: 0.7,
@@ -269,6 +281,36 @@ export const OptimizationDashboard: React.FC = () => {
       testSplit: 0.1
     }
   });
+
+  const handleAddModelComparison = (config: OptimizationConfig) => {
+    const newComparison: ModelComparison = {
+      id: `model_${Date.now()}`,
+      name: `Model ${modelComparisons.length + 1}`,
+      config,
+      results: {
+        precision: 0.85 + Math.random() * 0.1,
+        recall: 0.82 + Math.random() * 0.1,
+        f1Score: 0.83 + Math.random() * 0.1,
+        mAP: 0.80 + Math.random() * 0.1,
+        accuracy: 0.87 + Math.random() * 0.1,
+        loss: 0.15 + Math.random() * 0.1,
+        trainingTime: 45 + Math.random() * 30,
+        modelSize: 15 * 1024 * 1024 + Math.random() * 10 * 1024 * 1024,
+        inferenceTime: 20 + Math.random() * 15
+      },
+      timestamp: new Date()
+    };
+    setModelComparisons(prev => [...prev, newComparison]);
+  };
+
+  const handleRemoveModelComparison = (id: string) => {
+    setModelComparisons(prev => prev.filter(m => m.id !== id));
+  };
+
+  const handleDownloadModel = (id: string) => {
+    // Simulate model download
+    alert(`Downloading model ${id}...`);
+  };
 
   const handleStartOptimization = async () => {
     try {
@@ -294,8 +336,137 @@ export const OptimizationDashboard: React.FC = () => {
     }
   };
 
+  const tabs = [
+    { id: 'overview', label: 'Overview', icon: <Eye size={20} /> },
+    { id: 'process', label: 'Modeling Process', icon: <BookOpen size={20} /> },
+    { id: 'dataset', label: 'Dataset Preview', icon: <Database size={20} /> },
+    { id: 'comparison', label: 'Model Comparison', icon: <GitCompare size={20} /> },
+    { id: 'testing', label: 'Model Testing', icon: <TestTube size={20} /> }
+  ];
+
+  const renderTabContent = () => {
+    switch (activeTab) {
+      case 'process': return <ModelingProcess />;
+      case 'dataset': return <DatasetPreview />;
+      case 'comparison': return (
+        <ModelComparisonComponent 
+          comparisons={modelComparisons}
+          onAddComparison={handleAddModelComparison}
+          onRemoveComparison={handleRemoveModelComparison}
+          onDownloadModel={handleDownloadModel}
+        />
+      );
+      case 'testing': return <ModelTesting />;
+      default: return renderOverviewContent();
+    }
+  };
+
+  const renderOverviewContent = () => (
+    <>
+      {/* Error Display */}
+      {error && (
+        <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg text-red-700">
+          <strong>Error:</strong> {error}
+        </div>
+      )}
+
+      {/* Progress Overview */}
+      <div className="mb-12">
+        <div className="bg-white rounded-xl p-6 shadow-lg border border-gray-200">
+          <h2 className="text-2xl font-bold text-gray-800 mb-4">Progress Proyek</h2>
+          <div className="flex items-center gap-4 mb-4">
+            <div className="flex-1 bg-gray-200 rounded-full h-3">
+              <div className="bg-gradient-to-r from-blue-500 to-purple-500 h-3 rounded-full transition-all duration-500" style={{ width: `${overallProgress}%` }} />
+            </div>
+            <span className="text-lg font-semibold text-gray-700">{overallProgress}%</span>
+          </div>
+          <div className="grid md:grid-cols-3 gap-4 text-center">
+            <div className="p-4 bg-green-50 rounded-lg">
+              <div className="text-2xl font-bold text-green-600">{completedSteps}</div>
+              <div className="text-green-700">Selesai</div>
+            </div>
+            <div className="p-4 bg-blue-50 rounded-lg">
+              <div className="text-2xl font-bold text-blue-600">
+                {session?.steps.filter(s => s.status === 'running').length || 0}
+              </div>
+              <div className="text-blue-700">Sedang Berjalan</div>
+            </div>
+            <div className="p-4 bg-gray-50 rounded-lg">
+              <div className="text-2xl font-bold text-gray-600">
+                {totalSteps - completedSteps - (session?.steps.filter(s => s.status === 'running').length || 0)}
+              </div>
+              <div className="text-gray-700">Menunggu</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Optimization Progress */}
+      {session && (
+        <div className="mb-12">
+          <OptimizationProgress session={session} onStop={stopOptimization} />
+        </div>
+      )}
+
+      {/* Configuration and Metrics */}
+      <div className="grid lg:grid-cols-2 gap-8 mb-12">
+        <DataBalancingConfig config={config} onChange={setConfig} />
+        <MetricsDashboard session={session} />
+      </div>
+
+      {/* Optimization Stages */}
+      <div className="mb-12">
+        <h2 className="text-3xl font-bold text-gray-800 mb-8 text-center">
+          Workflow Optimation
+        </h2>
+        <div className="space-y-6">
+          {stages.map((stage) => (
+            <StageCard key={stage.number} {...stage} />
+          ))}
+        </div>
+      </div>
+
+      {/* Action Buttons */}
+      <div className="text-center">
+        <div className="flex flex-wrap justify-center gap-4">
+          <button 
+            onClick={handleStartOptimization}
+            disabled={isLoading}
+            className="flex items-center gap-2 px-8 py-4 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg hover:shadow-lg transition-all duration-300 font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            {isLoading ? <Loader className="animate-spin" size={20} /> : <PlayCircle size={20} />}
+            {isLoading ? 'Sedang Berjalan...' : 'Mulai Optimasi'}
+          </button>
+          
+          <button 
+            onClick={handleExportConfig}
+            className="flex items-center gap-2 px-8 py-4 bg-white text-gray-700 border-2 border-gray-300 rounded-lg hover:border-gray-400 transition-colors font-semibold"
+          >
+            <Download size={20} />
+            Eksport Configuration
+          </button>
+          
+          <button 
+            onClick={() => fileInputRef.current?.click()}
+            className="flex items-center gap-2 px-8 py-4 bg-white text-gray-700 border-2 border-gray-300 rounded-lg hover:border-gray-400 transition-colors font-semibold"
+          >
+            <FileUp size={20} />
+            Import Configuration
+          </button>
+          
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept=".json"
+            onChange={handleImportConfig}
+            className="hidden"
+          />
+        </div>
+      </div>
+    </>
+  );
+
   const stages = [
-    const stages = [
   {
     number: 1,
     title: "Model Setup & Analysis",
@@ -421,106 +592,28 @@ export const OptimizationDashboard: React.FC = () => {
           </div>
         </div>
 
-        {/* Error Display */}
-        {error && (
-          <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg text-red-700">
-            <strong>Error:</strong> {error}
-          </div>
-        )}
-
-        {/* Progress Overview */}
-        <div className="mb-12">
-          <div className="bg-white rounded-xl p-6 shadow-lg border border-gray-200">
-            <h2 className="text-2xl font-bold text-gray-800 mb-4">Progress Proyek</h2>
-            <div className="flex items-center gap-4 mb-4">
-              <div className="flex-1 bg-gray-200 rounded-full h-3">
-                <div className="bg-gradient-to-r from-blue-500 to-purple-500 h-3 rounded-full transition-all duration-500" style={{ width: `${overallProgress}%` }} />
-              </div>
-              <span className="text-lg font-semibold text-gray-700">{overallProgress}%</span>
-            </div>
-            <div className="grid md:grid-cols-3 gap-4 text-center">
-              <div className="p-4 bg-green-50 rounded-lg">
-                <div className="text-2xl font-bold text-green-600">{completedSteps}</div>
-                <div className="text-green-700">Selesai</div>
-              </div>
-              <div className="p-4 bg-blue-50 rounded-lg">
-                <div className="text-2xl font-bold text-blue-600">
-                  {session?.steps.filter(s => s.status === 'running').length || 0}
-                </div>
-                <div className="text-blue-700">Sedang Berjalan</div>
-              </div>
-              <div className="p-4 bg-gray-50 rounded-lg">
-                <div className="text-2xl font-bold text-gray-600">
-                  {totalSteps - completedSteps - (session?.steps.filter(s => s.status === 'running').length || 0)}
-                </div>
-                <div className="text-gray-700">Menunggu</div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Optimization Progress */}
-        {session && (
-          <div className="mb-12">
-            <OptimizationProgress session={session} onStop={stopOptimization} />
-          </div>
-        )}
-
-        {/* Configuration and Metrics */}
-        <div className="grid lg:grid-cols-2 gap-8 mb-12">
-          <DataBalancingConfig config={config} onChange={setConfig} />
-          <MetricsDashboard session={session} />
-        </div>
-
-        {/* Optimization Stages */}
-        <div className="mb-12">
-          <h2 className="text-3xl font-bold text-gray-800 mb-8 text-center">
-            Worflow Optimation
-          </h2>
-          <div className="space-y-6">
-            {stages.map((stage) => (
-              <StageCard key={stage.number} {...stage} />
+        {/* Navigation Tabs */}
+        <div className="mb-8">
+          <div className="flex flex-wrap justify-center gap-2 p-2 bg-white rounded-xl shadow-lg border border-gray-200">
+            {tabs.map((tab) => (
+              <button
+                key={tab.id}
+                onClick={() => setActiveTab(tab.id)}
+                className={`flex items-center gap-2 px-6 py-3 rounded-lg font-medium transition-all duration-200 ${
+                  activeTab === tab.id
+                    ? 'bg-blue-500 text-white shadow-md'
+                    : 'text-gray-600 hover:bg-gray-100'
+                }`}
+              >
+                {tab.icon}
+                {tab.label}
+              </button>
             ))}
           </div>
         </div>
 
-        {/* Action Buttons */}
-        <div className="text-center">
-          <div className="flex flex-wrap justify-center gap-4">
-            <button 
-              onClick={handleStartOptimization}
-              disabled={isLoading}
-              className="flex items-center gap-2 px-8 py-4 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg hover:shadow-lg transition-all duration-300 font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              {isLoading ? <Loader className="animate-spin" size={20} /> : <PlayCircle size={20} />}
-              {isLoading ? 'Sedang Berjalan...' : 'Mulai Optimasi'}
-            </button>
-            
-            <button 
-              onClick={handleExportConfig}
-              className="flex items-center gap-2 px-8 py-4 bg-white text-gray-700 border-2 border-gray-300 rounded-lg hover:border-gray-400 transition-colors font-semibold"
-            >
-              <Download size={20} />
-              Eksport Configuration
-            </button>
-            
-            <button 
-              onClick={() => fileInputRef.current?.click()}
-              className="flex items-center gap-2 px-8 py-4 bg-white text-gray-700 border-2 border-gray-300 rounded-lg hover:border-gray-400 transition-colors font-semibold"
-            >
-              <FileUp size={20} />
-              Import Configuration
-            </button>
-            
-            <input
-              ref={fileInputRef}
-              type="file"
-              accept=".json"
-              onChange={handleImportConfig}
-              className="hidden"
-            />
-          </div>
-        </div>
+        {/* Tab Content */}
+        {renderTabContent()}
       </div>
     </div>
   );
